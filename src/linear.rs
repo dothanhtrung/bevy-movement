@@ -81,7 +81,8 @@ where
     }
 }
 
-#[derive(Component)]
+#[cfg_attr(feature = "serialize", derive(serde::Deserialize, serde::Serialize))]
+#[derive(Component, Clone)]
 pub struct LinearMovement {
     pub speed: f32,
 

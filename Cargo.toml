@@ -15,6 +15,7 @@ bevy = { version = ">=0.18", features = ["bevy_state"], default-features = false
 avian3d = { version = "0.6", optional = true }
 avian2d = { version = "0.6", optional = true }
 leafwing-input-manager = { version = "0.20", optional = true }
+serde = { version = "1.0", features = ["derive"], optional = true }
 
 [dev-dependencies]
 bevy = { version = ">=0.18", features = ["dynamic_linking", "free_camera"] }
@@ -22,6 +23,7 @@ fastrand = "2.4"
 
 [features]
 default = ["mouse_control", "kb_control"]
+serialize = ["bevy/serialize", "serde"]
 2d = [] # Ignore z index
 # collider_3d and collider_2d cannot be enabled at the same time
 collider_3d = ["avian3d"]

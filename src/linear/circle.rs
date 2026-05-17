@@ -8,7 +8,8 @@ use bevy::prelude::{
     Vec3,
 };
 
-#[derive(Component)]
+#[cfg_attr(feature = "serialize", derive(serde::Deserialize, serde::Serialize))]
+#[derive(Component, Clone)]
 pub struct LinearCircleMovement {
     pub speed: f32,
     pub anchor: Vec3,

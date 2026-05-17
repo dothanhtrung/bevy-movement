@@ -79,6 +79,7 @@ pub struct NextDes {
     pub is_chain: bool,
 }
 
+#[cfg_attr(feature = "serialize", derive(serde::Deserialize, serde::Serialize))]
 #[derive(Default, Clone)]
 pub struct Destination {
     pub pos: Vec3,
