@@ -16,10 +16,11 @@ avian3d = { version = ">=0.7", optional = true }
 avian2d = { version = ">=0.7", optional = true }
 leafwing-input-manager = { version = ">=0.21", optional = true }
 serde = { version = "1.0", features = ["derive"], optional = true }
+bevy_northstar = { version = "0.7", default-features = false, features = ["parallel"], optional = true }
 
 [dev-dependencies]
 bevy = { version = ">=0.19", features = ["dynamic_linking", "free_camera"] }
-fastrand = "2.4"
+fastrand = "2.5"
 
 [features]
 default = ["mouse_control", "kb_control"]
@@ -31,6 +32,7 @@ collider_2d = ["2d", "avian2d"]
 
 mouse_control = ["bevy/bevy_render", "bevy/bevy_window"]
 kb_control = ["leafwing-input-manager"]
+path_finding = ["bevy_northstar"]
 
 
 [[example]]
@@ -44,3 +46,11 @@ required-features = ["mouse_control", "kb_control"]
 [[example]]
 name = "input_control_2d"
 required-features = ["mouse_control", "kb_control", "2d"]
+
+[[example]]
+name = "path_finding_2d"
+required-features = ["2d", "path_finding", "mouse_control"]
+
+[[example]]
+name = "path_finding_3d"
+required-features = ["mouse_control", "path_finding"]
