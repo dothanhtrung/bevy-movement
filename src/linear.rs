@@ -8,7 +8,6 @@ use crate::{
 };
 #[cfg(feature = "collider_2d")]
 use avian2d::{
-    math::Vector,
     prelude::{
         LinearVelocity,
         PhysicsSchedulePlugin,
@@ -16,7 +15,6 @@ use avian2d::{
 };
 #[cfg(feature = "collider_3d")]
 use avian3d::{
-    math::Vector,
     prelude::{
         LinearVelocity,
         PhysicsSchedulePlugin,
@@ -179,7 +177,7 @@ fn straight_travel(time: Res<Time>, mut query: Query<(&mut Transform, &LinearMov
 fn straight_travel(mut query: Query<(&mut Transform, &mut LinearMovement, &mut LinearVelocity)>, time: Res<Time>) {
     for (mut transform, mut movement, mut velocity) in query.iter_mut() {
         if movement.is_stopped {
-            **velocity = Vector::ZERO;
+            *velocity = LinearVelocity::ZERO;
             movement.is_stopped = false;
             continue;
         }
@@ -197,7 +195,7 @@ fn straight_travel(mut query: Query<(&mut Transform, &mut LinearMovement, &mut L
 
         let len = direction.length();
         if len <= flat_vel * time.delta_secs() {
-            **velocity = Vector::ZERO;
+            *velocity = LinearVelocity::ZERO;
             // FIXME: If the destination is closer than the distance object can travel in 1 tick,
             //        the object will go through the collider when enable physic
             transform.translation = next_stop;
