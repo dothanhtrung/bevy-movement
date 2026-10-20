@@ -23,8 +23,8 @@ use avian3d::{
     },
 };
 use bevy::app::App;
-#[cfg(feature = "path_finding")]
-use bevy::prelude::Resource;
+// #[cfg(feature = "path_finding")]
+// use bevy::prelude::Resource;
 use bevy::prelude::{
     in_state,
     Commands,
@@ -42,11 +42,11 @@ use bevy::prelude::{
     Vec3,
     Vec3Swizzles,
 };
-#[cfg(feature = "path_finding")]
-use bevy_northstar::prelude::{
-    AgentPos,
-    NextPos,
-};
+// #[cfg(feature = "path_finding")]
+// use bevy_northstar::prelude::{
+//     AgentPos,
+//     NextPos,
+// };
 
 pub(crate) struct LinearMovementPlugin<T>
 where
@@ -76,11 +76,11 @@ where
 
         #[cfg(not(feature = "path_finding"))]
         let systems = (circle_travel, check_arrived, straight_travel);
-        #[cfg(feature = "path_finding")]
-        let systems = (circle_travel, check_arrived, straight_travel, update_travel_stop);
-
-        #[cfg(feature = "path_finding")]
-        app.insert_resource(GridInfo::default());
+//         #[cfg(feature = "path_finding")]
+//         let systems = (circle_travel, check_arrived, straight_travel, update_travel_stop);
+//
+//         #[cfg(feature = "path_finding")]
+//         app.insert_resource(GridInfo::default());
 
         app.add_observer(next_des);
 
@@ -144,12 +144,12 @@ impl LinearMovement {
     }
 }
 
-#[cfg(feature = "path_finding")]
-#[derive(Resource, Default)]
-pub struct GridInfo {
-    pub tile_size: Vec3,
-    pub grid_offset: Vec3,
-}
+// #[cfg(feature = "path_finding")]
+// #[derive(Resource, Default)]
+// pub struct GridInfo {
+//     pub tile_size: Vec3,
+//     pub grid_offset: Vec3,
+// }
 
 #[cfg(not(any(feature = "collider_2d", feature = "collider_3d")))]
 fn straight_travel(time: Res<Time>, mut query: Query<(&mut Transform, &LinearMovement)>) {
@@ -210,13 +210,13 @@ fn straight_travel(mut query: Query<(&mut Transform, &mut LinearMovement, &mut L
 fn check_arrived(
     mut commands: Commands,
     #[cfg(not(feature = "path_finding"))] mut query: Query<(&Transform, &mut LinearMovement, Entity, Entity, Entity)>,
-    #[cfg(feature = "path_finding")] mut query: Query<(
-        &Transform,
-        &mut LinearMovement,
-        Entity,
-        &mut AgentPos,
-        &NextPos,
-    )>,
+    // #[cfg(feature = "path_finding")] mut query: Query<(
+    //     &Transform,
+    //     &mut LinearMovement,
+    //     Entity,
+    //     &mut AgentPos,
+    //     &NextPos,
+    // )>,
 ) {
     for (transform, mut movement, e, mut _agent_pos, _next_pos) in query.iter_mut() {
         if movement.des.is_empty() || movement.is_freezed {
@@ -245,28 +245,28 @@ fn check_arrived(
             }
             movement.des.remove(0);
 
-            #[cfg(feature = "path_finding")]
-            {
-                _agent_pos.0 = _next_pos.0;
-                commands.entity(e).remove::<NextPos>();
-            }
+            // #[cfg(feature = "path_finding")]
+            // {
+            //     _agent_pos.0 = _next_pos.0;
+            //     commands.entity(e).remove::<NextPos>();
+            // }
         }
     }
 }
 
-#[cfg(feature = "path_finding")]
-fn update_travel_stop(mut query: Query<(&NextPos, &mut LinearMovement)>, grid_info: Res<GridInfo>) {
-    for (next_pos, mut movement) in query.iter_mut() {
-        let next_pos_f = next_pos.0.as_vec3() * grid_info.tile_size + grid_info.grid_offset;
-        if let Some(des) = movement.des.first() {
-            if next_pos_f != des.pos {
-                movement.des = vec![Destination::from_pos(next_pos_f)];
-            }
-        } else {
-            movement.des = vec![Destination::from_pos(next_pos_f)];
-        }
-    }
-}
+// #[cfg(feature = "path_finding")]
+// fn update_travel_stop(mut query: Query<(&NextPos, &mut LinearMovement)>, grid_info: Res<GridInfo>) {
+//     for (next_pos, mut movement) in query.iter_mut() {
+//         let next_pos_f = next_pos.0.as_vec3() * grid_info.tile_size + grid_info.grid_offset;
+//         if let Some(des) = movement.des.first() {
+//             if next_pos_f != des.pos {
+//                 movement.des = vec![Destination::from_pos(next_pos_f)];
+//             }
+//         } else {
+//             movement.des = vec![Destination::from_pos(next_pos_f)];
+//         }
+//     }
+// }
 
 fn next_des(trigger: On<NextDes>, mut query: Query<&mut LinearMovement>) {
     if let Ok(mut movement) = query.get_mut(trigger.entity) {

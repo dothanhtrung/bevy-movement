@@ -127,7 +127,7 @@ fn moving(
         if state.axis_pair(&MovementAction::Walk) != Vec2::ZERO {
             kb_control.is_moving = true;
             let direction = state.clamped_axis_pair(&MovementAction::Walk);
-            // Make a distance litter further than what object can travel in 1 tick
+            // Make a distance litter further than what object can travel in 1 tick to avoid stuttering movement
             let distance = movement.speed * time.delta_secs() * 2.;
 
             let next_pos = if cfg!(feature = "2d") {

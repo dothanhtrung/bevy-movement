@@ -1,6 +1,6 @@
 [package]
 name = "bevy_movement"
-version = "0.4.0"
+version = "0.5.0"
 authors = ["Trung Do <dothanhtrung@pm.me>"]
 edition = "2021"
 license = "MIT OR Apache-2.0"
@@ -11,15 +11,15 @@ exclude = ["assets", "examples", "tests", ".cargo"]
 categories = ["game-development"]
 
 [dependencies]
-bevy = { version = ">=0.19", features = ["bevy_state"], default-features = false }
-avian3d = { version = ">=0.7", optional = true }
-avian2d = { version = ">=0.7", optional = true }
-leafwing-input-manager = { version = ">=0.21", optional = true }
+bevy = { version = ">=0.20", features = ["bevy_state"], default-features = false }
+avian3d = { version = ">=0.8", optional = true }
+avian2d = { version = ">=0.8", optional = true }
+leafwing-input-manager = { version = ">=0.22", optional = true }
 serde = { version = "1.0", features = ["derive"], optional = true }
-bevy_northstar = { version = "0.7", default-features = false, features = ["parallel"], optional = true }
+# bevy_northstar = { version = ">=0.8", default-features = false, features = ["parallel"], optional = true }
 
 [dev-dependencies]
-bevy = { version = ">=0.19", features = ["dynamic_linking", "free_camera"] }
+bevy = { version = ">=0.20", features = ["dynamic_linking", "free_camera"] }
 fastrand = "2.5"
 
 [features]
@@ -29,10 +29,12 @@ serialize = ["bevy/serialize", "serde"]
 # collider_3d and collider_2d cannot be enabled at the same time
 collider_3d = ["avian3d"]
 collider_2d = ["2d", "avian2d"]
+debug = []
 
 mouse_control = ["bevy/bevy_render", "bevy/bevy_window"]
 kb_control = ["leafwing-input-manager"]
-path_finding = ["bevy_northstar"]
+# Temporary ignore this feature because bevy_northstar is not support bevy 0.20 yet
+path_finding = []
 
 
 [[example]]
