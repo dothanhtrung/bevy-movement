@@ -1,5 +1,8 @@
 use bevy::prelude::*;
-use bevy_movement::linear::LinearMovement;
+use bevy_movement::linear::{
+    Movement,
+    MovementType,
+};
 use bevy_movement::{
     Arrived,
     Destination,
@@ -23,7 +26,10 @@ fn setup(mut commands: Commands, mut meshes: ResMut<Assets<Mesh>>, mut materials
             Transform::from_translation(Vec3::new(0.0, 0.0, 0.0)),
             Mesh3d(meshes.add(Cuboid::default())),
             MeshMaterial3d(default_mat.clone()),
-            LinearMovement { speed: 2., ..default() },
+            Movement {
+                movement_type: MovementType::Linear(2.),
+                ..default()
+            },
         ))
         .observe(arrived)
         .id();

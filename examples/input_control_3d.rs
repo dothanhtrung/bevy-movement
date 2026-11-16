@@ -11,8 +11,11 @@ use avian3d::{
     PhysicsPlugins,
 };
 use bevy::prelude::*;
-use bevy_movement::kb_control::KbMovementObject;
-use bevy_movement::linear::LinearMovement;
+use bevy_movement::{
+    kb_control::KbMovementObject,
+    linear::MovementType,
+};
+use bevy_movement::linear::Movement;
 use bevy_movement::mouse_control::{
     ClickCatcher,
     MouseMovementObject,
@@ -101,7 +104,10 @@ fn setup(mut commands: Commands, mut meshes: ResMut<Assets<Mesh>>, mut materials
         RigidBody::Dynamic,
         #[cfg(feature = "collider_3d")]
         Collider::sphere(0.5),
-        LinearMovement { speed: 5., ..default() },
+        Movement {
+            movement_type: MovementType::Linear(5.),
+            ..default()
+        },
     ));
 
     commands.spawn((

@@ -16,6 +16,7 @@ avian3d = { version = ">=0.8", optional = true }
 avian2d = { version = ">=0.8", optional = true }
 leafwing-input-manager = { version = ">=0.22", optional = true }
 serde = { version = "1.0", features = ["derive"], optional = true }
+bevy_auto_timer = { version = ">=0.5" }
 # bevy_northstar = { version = ">=0.8", default-features = false, features = ["parallel"], optional = true }
 
 [dev-dependencies]

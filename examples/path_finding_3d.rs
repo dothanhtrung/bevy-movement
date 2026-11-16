@@ -1,7 +1,6 @@
 //! Move object by mouse click with path finding provided by bevy_northstar.
 //! You will need to set up your grid with bevy_northstar first.
 
-
 use bevy::camera_controller::free_camera::{
     FreeCamera,
     FreeCameraPlugin,
@@ -9,7 +8,7 @@ use bevy::camera_controller::free_camera::{
 use bevy::prelude::*;
 use bevy_movement::linear::{
     GridInfo,
-    LinearMovement,
+    Movement,
 };
 use bevy_movement::mouse_control::{
     ClickCatcher,
@@ -100,9 +99,7 @@ fn setup(
         }
     }
     grid.build();
-    let grid_id = commands
-        .spawn(grid)
-        .id();
+    let grid_id = commands.spawn(grid).id();
 
     // Movement object
     let start_tile = UVec3::new(1, 1, 1);
@@ -113,8 +110,8 @@ fn setup(
         MouseMovementObject::default(), // Move by mouse input
         Mesh3d(meshes.add(Sphere::new(0.5))),
         MeshMaterial3d(default_mat.clone()),
-        LinearMovement {
-            speed: 10.,
+        Movement {
+            movement_type: MovementType::Linear(10.),
             ..default()
         },
     ));

@@ -1,4 +1,4 @@
-use crate::linear::LinearMovement;
+use crate::linear::{Movement, MovementType};
 use crate::{
     Destination,
     NextDes,
@@ -116,7 +116,7 @@ fn moving(
     mut commands: Commands,
     mut query: Query<(
         &ActionState<MovementAction>,
-        &mut LinearMovement,
+        &mut Movement,
         &Transform,
         &mut KbMovementObject,
         Entity,
@@ -127,8 +127,12 @@ fn moving(
         if state.axis_pair(&MovementAction::Walk) != Vec2::ZERO {
             kb_control.is_moving = true;
             let direction = state.clamped_axis_pair(&MovementAction::Walk);
+            let speed = match &movement.movement_type {
+                MovementType::Linear(_speed) => *_speed,
+                MovementType::Stepper(config) => config.speed,
+            };
             // Make a distance litter further than what object can travel in 1 tick to avoid stuttering movement
-            let distance = movement.speed * time.delta_secs() * 2.;
+            let distance = speed * time.delta_secs() * 2.;
 
             let next_pos = if cfg!(feature = "2d") {
                 Vec3::new(

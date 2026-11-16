@@ -11,7 +11,7 @@ use bevy::prelude::*;
 use bevy::window::WindowResolution;
 use bevy_movement::linear::{
     GridInfo,
-    LinearMovement,
+    Movement,
 };
 use bevy_movement::mouse_control::MouseMovementObject;
 use bevy_movement::MovementPluginAnyState;
@@ -90,8 +90,8 @@ fn setup(mut commands: Commands, window: Single<&Window>, mut grid_info: ResMut<
             custom_size: Some(Vec2::new(tile_size.x, tile_size.y)),
             ..default()
         },
-        LinearMovement {
-            speed: 1000.,
+        Movement {
+            movement_type: MovementType::Linear(1000.),
             ..default()
         },
     ));
