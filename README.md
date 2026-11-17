@@ -17,6 +17,91 @@ bevy_movement
 Quickstart
 ----------
 
+For more detail, please see [examples](./examples).
+
+### Basic
+
+Add plugin the app:
+```rust
+App::new().add_plugins(MovementPluginAnyState::any());
+```
+
+Include a `*Movement` component in the entity. For example:
+```rust
+command.spawn(
+    LinearMovement {
+        movement_type: MovementType::Linear(50.), // 50. is speed
+        ..default()
+    });
+```
+
+Move the entity to a new destination by event:
+```rust
+commands.trigger(NextDes::new(entity, Vec3::new(1., 1., 1.)));
+```
+
+### Walk from A to B
+
+Use `LinearMovement` with `movement_type` is `Linear`:
+```rust
+command.spawn(
+    LinearMovement {
+        movement_type: MovementType::Linear(50.),
+        ..default()
+    });
+```
+
+### Step from A to B
+
+Use `LinearMovement` with `movement_type` is `Stepper`:
+```rust
+command.spawn(
+    LinearMovement {
+        movement_type: MovementType::Stepper(StepConfig::new(50., 0.25)),
+        ..default()
+    });
+```
+
+### Walk in circle around A
+
+Use `CircleMovement` with `movement_type` is `Linear`:
+```rust
+command.spawn(
+    CircleMovement {
+        movement_type: MovementType::Linear(5.),
+        ..default()
+    });
+```
+
+### Step in circle around A
+
+Use `CircleMovement` with `movement_type` is `Stepper`:
+```rust
+command.spawn(
+    CircleMovement {
+        movement_type: MovementType::Stepper(StepConfig {
+            speed: 5.,
+            step_timer: 0.25,
+            still_timer: 0.5,
+            ..default()
+        }),
+        ..default()
+    });
+```
+
+### Walk controled by Keyboard/Mouse
+
+Include `KbMovementObject` or `MouseMovementObject` along with `LinearMovement` in the entity.
+For example:
+```rust
+command.spawn(
+    KbMovementObject::default(),    // Move by keyboard/gamepad input
+    MouseMovementObject::default(), // Move by mouse input
+    LinearMovement {
+        movement_type: MovementType::Linear(50.),
+        ..default()
+    });
+```
 
 License
 -------
@@ -29,7 +114,7 @@ Compatible Bevy Versions
 
 | bevy      | bevy_movement |
 |-----------|---------------|
-| 0.20      | 0.5           |
+| 0.20      | 0.5-0.6       |
 | 0.19      | 0.4           |
 | 0.18      | 0.3           |
 | 0.17-0.18 | 0.2           |

@@ -7,7 +7,6 @@ use bevy_movement::linear::{
 };
 use bevy_movement::{
     Arrived,
-    Destination,
     MovementPluginAnyState,
     NextDes,
 };
@@ -54,25 +53,13 @@ fn setup(mut commands: Commands) {
 
     commands.spawn(Camera2d);
 
-    // Just for example. You should not trigger this event manually.
-    // Trigger function 'arrived' below to add new destination
-    commands.trigger(Arrived {
-        entity: linear_id,
-        pos: Vec3::ZERO,
-    });
-    commands.trigger(Arrived {
-        entity: stepper_id,
-        pos: Vec3::ZERO,
-    });
+    commands.trigger(NextDes::new(linear_id, Vec3::ZERO));
+    commands.trigger(NextDes::new(stepper_id, Vec3::ZERO));
 }
 
 fn arrived(trigger: On<Arrived>, mut commands: Commands) {
     let next_pos = Vec3::new(fastrand::i32(-640..640) as f32, fastrand::i32(-360..360) as f32, 0.);
 
     // New destination
-    commands.trigger(NextDes {
-        entity: trigger.entity,
-        des: Destination::from_pos(next_pos),
-        is_chain: false,
-    });
+    commands.trigger(NextDes::new(trigger.entity, next_pos));
 }

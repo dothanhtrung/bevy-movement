@@ -81,6 +81,16 @@ pub struct NextDes {
     pub is_chain: bool,
 }
 
+impl NextDes {
+    pub fn new(entity: Entity, pos: Vec3) -> Self {
+        Self {
+            entity,
+            des: Destination::from_pos(pos),
+            is_chain: false,
+        }
+    }
+}
+
 #[cfg_attr(feature = "serialize", derive(serde::Deserialize, serde::Serialize))]
 #[derive(Default, Clone)]
 pub struct Destination {
