@@ -83,7 +83,9 @@ where
             panic!("LinearMovementPlugin with 'physic' feature requires avian PhysicsPlugins. Add it first!");
         }
 
-        app.add_plugins(AutoTimerPlugin::new(self.states.clone()));
+        if !app.is_plugin_added::<AutoTimerPlugin<T>>() {
+            app.add_plugins(AutoTimerPlugin::new(self.states.clone()));
+        }
 
         #[cfg(not(feature = "path_finding"))]
         let systems = (circle_travel, check_arrived, straight_travel, stepper_check);
