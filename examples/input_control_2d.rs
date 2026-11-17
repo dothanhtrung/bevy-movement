@@ -13,13 +13,13 @@ use avian2d::{
 };
 use bevy::color::palettes::basic::WHITE;
 use bevy::prelude::*;
+use bevy_movement::linear::LinearMovement;
+use bevy_movement::mouse_control::MouseMovementObject;
+use bevy_movement::MovementPluginAnyState;
 use bevy_movement::{
     kb_control::KbMovementObject,
     linear::MovementType,
 };
-use bevy_movement::linear::LinearMovement;
-use bevy_movement::mouse_control::MouseMovementObject;
-use bevy_movement::MovementPluginAnyState;
 
 fn main() {
     let mut app = App::new();

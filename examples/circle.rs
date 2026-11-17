@@ -1,10 +1,10 @@
 use bevy::prelude::*;
 use bevy_movement::linear::circle::CircleMovement;
-use bevy_movement::MovementPluginAnyState;
 use bevy_movement::linear::{
     MovementType,
     StepConfig,
 };
+use bevy_movement::MovementPluginAnyState;
 
 fn main() {
     App::new()

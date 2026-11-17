@@ -1,9 +1,8 @@
 pub mod circle;
 
-use std::time::Duration;
 use crate::linear::circle::{
-    CircleMovement,
     circle_travel,
+    CircleMovement,
 };
 use crate::{
     Arrived,
@@ -11,18 +10,14 @@ use crate::{
     NextDes,
 };
 #[cfg(feature = "collider_2d")]
-use avian2d::{
-    prelude::{
-        LinearVelocity,
-        PhysicsSchedulePlugin,
-    },
+use avian2d::prelude::{
+    LinearVelocity,
+    PhysicsSchedulePlugin,
 };
 #[cfg(feature = "collider_3d")]
-use avian3d::{
-    prelude::{
-        LinearVelocity,
-        PhysicsSchedulePlugin,
-    },
+use avian3d::prelude::{
+    LinearVelocity,
+    PhysicsSchedulePlugin,
 };
 use bevy::app::App;
 use bevy::ecs::hierarchy::ChildOf;
@@ -30,6 +25,7 @@ use bevy::ecs::query::{
     With,
     Without,
 };
+use std::time::Duration;
 // #[cfg(feature = "path_finding")]
 // use bevy::prelude::Resource;
 use bevy::prelude::{
