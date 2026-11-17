@@ -8,7 +8,7 @@ use bevy::camera_controller::free_camera::{
 use bevy::prelude::*;
 use bevy_movement::linear::{
     GridInfo,
-    Movement,
+    LinearMovement,
 };
 use bevy_movement::mouse_control::{
     ClickCatcher,
@@ -110,7 +110,7 @@ fn setup(
         MouseMovementObject::default(), // Move by mouse input
         Mesh3d(meshes.add(Sphere::new(0.5))),
         MeshMaterial3d(default_mat.clone()),
-        Movement {
+        LinearMovement {
             movement_type: MovementType::Linear(10.),
             ..default()
         },

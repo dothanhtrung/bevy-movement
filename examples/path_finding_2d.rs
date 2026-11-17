@@ -2,7 +2,6 @@
 //! You will need to set up your grid with bevy_northstar first.
 //! Consider remove northstar support because its coordinate system and grid size is ambious, unstable and hard to use.
 
-
 use bevy::color::palettes::basic::{
     RED,
     WHITE,
@@ -11,7 +10,7 @@ use bevy::prelude::*;
 use bevy::window::WindowResolution;
 use bevy_movement::linear::{
     GridInfo,
-    Movement,
+    LinearMovement,
 };
 use bevy_movement::mouse_control::MouseMovementObject;
 use bevy_movement::MovementPluginAnyState;
@@ -90,7 +89,7 @@ fn setup(mut commands: Commands, window: Single<&Window>, mut grid_info: ResMut<
             custom_size: Some(Vec2::new(tile_size.x, tile_size.y)),
             ..default()
         },
-        Movement {
+        LinearMovement {
             movement_type: MovementType::Linear(1000.),
             ..default()
         },

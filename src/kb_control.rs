@@ -1,4 +1,7 @@
-use crate::linear::{Movement, MovementType};
+use crate::linear::{
+    LinearMovement,
+    MovementType,
+};
 use crate::{
     Destination,
     NextDes,
@@ -116,7 +119,7 @@ fn moving(
     mut commands: Commands,
     mut query: Query<(
         &ActionState<MovementAction>,
-        &mut Movement,
+        &mut LinearMovement,
         &Transform,
         &mut KbMovementObject,
         Entity,

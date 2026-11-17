@@ -1,6 +1,10 @@
 use bevy::prelude::*;
-use bevy_movement::linear::circle::LinearCircleMovement;
+use bevy_movement::linear::circle::CircleMovement;
 use bevy_movement::MovementPluginAnyState;
+use bevy_movement::linear::{
+    MovementType,
+    StepConfig,
+};
 
 fn main() {
     App::new()
@@ -17,7 +21,25 @@ fn setup(mut commands: Commands, mut meshes: ResMut<Assets<Mesh>>, mut materials
         Transform::from_translation(Vec3::new(1.0, 1.0, 1.0)),
         Mesh3d(meshes.add(Cuboid::default())),
         MeshMaterial3d(default_mat.clone()),
-        LinearCircleMovement { speed: 5., ..default() },
+        CircleMovement {
+            movement_type: MovementType::Linear(5.),
+            ..default()
+        },
+    ));
+
+    commands.spawn((
+        Transform::from_translation(Vec3::new(2.0, 1., 2.0)),
+        Mesh3d(meshes.add(Cuboid::default())),
+        MeshMaterial3d(default_mat.clone()),
+        CircleMovement {
+            movement_type: MovementType::Stepper(StepConfig {
+                speed: 5.,
+                step_timer: 0.25,
+                still_timer: 0.5,
+                ..default()
+            }),
+            ..default()
+        },
     ));
 
     commands.spawn((

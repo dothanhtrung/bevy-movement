@@ -1,8 +1,10 @@
 pub mod circle;
 
 use std::time::Duration;
-
-use crate::linear::circle::circle_travel;
+use crate::linear::circle::{
+    CircleMovement,
+    circle_travel,
+};
 use crate::{
     Arrived,
     Destination,
@@ -108,7 +110,7 @@ where
 }
 
 #[cfg_attr(feature = "serialize", derive(serde::Deserialize, serde::Serialize))]
-#[derive(Clone, PartialEq)]
+#[derive(Clone, PartialEq, Default)]
 pub struct StepConfig {
     pub speed: f32,
     /// Time to take one step in second
@@ -155,12 +157,12 @@ pub enum MovementType {
 struct StepperTimer;
 
 #[derive(Component, Default)]
-struct MovementBuilder;
+pub(crate) struct MovementBuilder;
 
 #[cfg_attr(feature = "serialize", derive(serde::Deserialize, serde::Serialize))]
 #[derive(Component, Clone)]
 #[require(MovementBuilder)]
-pub struct Movement {
+pub struct LinearMovement {
     pub movement_type: MovementType,
 
     pub des: Vec<Destination>,
@@ -178,7 +180,7 @@ pub struct Movement {
     pub offset: Vec3,
 }
 
-impl Default for Movement {
+impl Default for LinearMovement {
     fn default() -> Self {
         Self {
             movement_type: MovementType::Linear(0.),
@@ -192,7 +194,7 @@ impl Default for Movement {
     }
 }
 
-impl Movement {
+impl LinearMovement {
     pub fn freeze(&mut self) {
         self.is_freezed = true;
     }
@@ -206,6 +208,19 @@ impl Movement {
         self.des = Vec::new();
         self.is_stopped = true;
     }
+
+    pub fn speed(&self) -> f32 {
+        match &self.movement_type {
+            MovementType::Linear(_speed) => *_speed,
+            MovementType::Stepper(step_config) => {
+                if !step_config.is_stepping {
+                    0.
+                } else {
+                    step_config.speed
+                }
+            }
+        }
+    }
 }
 
 // #[cfg(feature = "path_finding")]
@@ -215,9 +230,28 @@ impl Movement {
 //     pub grid_offset: Vec3,
 // }
 
-fn stepper_check(mut commands: Commands, query: Query<(Entity, &Movement), With<MovementBuilder>>) {
-    for (e, movement) in query.iter() {
-        if let MovementType::Stepper(config) = &movement.movement_type {
+fn stepper_check(
+    mut commands: Commands,
+    query: Query<(Entity, Option<&LinearMovement>, Option<&CircleMovement>), With<MovementBuilder>>,
+) {
+    for (e, straight_movement, circle_movement) in query.iter() {
+        let config = if let Some(movement) = straight_movement {
+            if let MovementType::Stepper(config) = &movement.movement_type {
+                Some(config)
+            } else {
+                None
+            }
+        } else if let Some(movement) = circle_movement {
+            if let MovementType::Stepper(config) = &movement.movement_type {
+                Some(config)
+            } else {
+                None
+            }
+        } else {
+            None
+        };
+
+        if let Some(config) = config {
             let timer_sec = if config.is_stepping { config.step_timer } else { config.still_timer };
             commands.entity(e).remove::<MovementBuilder>();
             commands.entity(e).with_children(|p| {
@@ -230,22 +264,39 @@ fn stepper_check(mut commands: Commands, query: Query<(Entity, &Movement), With<
 
 fn on_step_timer_finished(
     trigger: On<AutoTimerFinished>,
-    mut movements: Query<&mut Movement, Without<MovementBuilder>>,
+    mut movements: Query<(Option<&mut LinearMovement>, Option<&mut CircleMovement>), Without<MovementBuilder>>,
     mut timer: Query<(&ChildOf, &mut AutoTimer), With<StepperTimer>>,
 ) {
     if let Ok((parent, mut timer)) = timer.get_mut(trigger.entity) {
-        if let Ok(mut movement) = movements.get_mut(parent.0) {
-            if let MovementType::Stepper(config) = &mut movement.movement_type {
-                timer.timer.reset();
-                timer.timer.pause();
-                if config.is_stepping {
-                    config.is_stepping = false;
-                    timer.timer.set_duration(Duration::from_secs_f32(config.still_timer));
-                } else {
-                    config.is_stepping = true;
-                    timer.timer.set_duration(Duration::from_secs_f32(config.step_timer));
+        timer.timer.pause();
+        if let Ok((straight_movement, circle_movement)) = movements.get_mut(parent.0) {
+            if let Some(mut movement) = straight_movement {
+                if let MovementType::Stepper(config) = &mut movement.movement_type {
+                    if config.is_stepping {
+                        config.is_stepping = false;
+                        timer.timer.set_duration(Duration::from_secs_f32(config.still_timer));
+                    } else {
+                        config.is_stepping = true;
+                        timer.timer.set_duration(Duration::from_secs_f32(config.step_timer));
+                    }
+
+                    timer.timer.reset();
+                    timer.timer.unpause();
                 }
-                timer.timer.unpause();
+            }
+            if let Some(mut movement) = circle_movement {
+                if let MovementType::Stepper(config) = &mut movement.movement_type {
+                    if config.is_stepping {
+                        config.is_stepping = false;
+                        timer.timer.set_duration(Duration::from_secs_f32(config.still_timer));
+                    } else {
+                        config.is_stepping = true;
+                        timer.timer.set_duration(Duration::from_secs_f32(config.step_timer));
+                    }
+
+                    timer.timer.reset();
+                    timer.timer.unpause();
+                }
             }
         }
     }
@@ -253,25 +304,14 @@ fn on_step_timer_finished(
 
 // Travel without collider
 #[cfg(not(any(feature = "collider_2d", feature = "collider_3d")))]
-fn straight_travel(time: Res<Time>, mut query: Query<(&mut Transform, &Movement)>) {
+fn straight_travel(time: Res<Time>, mut query: Query<(&mut Transform, &LinearMovement)>) {
     for (mut transform, movement) in query.iter_mut() {
         if movement.des.is_empty() || movement.is_freezed {
             continue;
         }
 
-        let speed = match &movement.movement_type {
-            MovementType::Linear(_speed) => *_speed,
-            MovementType::Stepper(step_config) => {
-                if !step_config.is_stepping {
-                    continue;
-                } else {
-                    step_config.speed
-                }
-            }
-        };
-
         let des = movement.des.first().unwrap();
-        let velocity = if let Some(custom_v) = des.custom_velocity { custom_v } else { speed };
+        let velocity = if let Some(custom_v) = des.custom_velocity { custom_v } else { movement.speed() };
 
         let v = velocity * time.delta_secs();
         let next_stop = movement.des.first().unwrap().pos + movement.offset;
@@ -289,7 +329,7 @@ fn straight_travel(time: Res<Time>, mut query: Query<(&mut Transform, &Movement)
 
 // Travel with collider
 #[cfg(any(feature = "collider_2d", feature = "collider_3d"))]
-fn straight_travel(mut query: Query<(&mut Transform, &mut Movement, &mut LinearVelocity)>, time: Res<Time>) {
+fn straight_travel(mut query: Query<(&mut Transform, &mut LinearMovement, &mut LinearVelocity)>, time: Res<Time>) {
     for (mut transform, mut movement, mut velocity) in query.iter_mut() {
         if movement.is_stopped {
             *velocity = LinearVelocity::ZERO;
@@ -300,19 +340,8 @@ fn straight_travel(mut query: Query<(&mut Transform, &mut Movement, &mut LinearV
             continue;
         }
 
-        let speed = match &movement.movement_type {
-            MovementType::Linear(_speed) => *_speed,
-            MovementType::Stepper(step_config) => {
-                if !step_config.is_stepping {
-                    continue;
-                } else {
-                    step_config.speed
-                }
-            }
-        };
-
         let des = movement.des.first().unwrap();
-        let flat_vel = if let Some(custom_v) = des.custom_velocity { custom_v } else { speed };
+        let flat_vel = if let Some(custom_v) = des.custom_velocity { custom_v } else { movement.speed() };
         let next_stop = movement.des.first().unwrap().pos + movement.offset;
         #[cfg(feature = "collider_3d")]
         let direction = next_stop - transform.translation;
@@ -333,7 +362,7 @@ fn straight_travel(mut query: Query<(&mut Transform, &mut Movement, &mut LinearV
 
 fn check_arrived(
     mut commands: Commands,
-    #[cfg(not(feature = "path_finding"))] mut query: Query<(&Transform, &mut Movement, Entity, Entity, Entity)>,
+    #[cfg(not(feature = "path_finding"))] mut query: Query<(&Transform, &mut LinearMovement, Entity, Entity, Entity)>,
     // #[cfg(feature = "path_finding")] mut query: Query<(
     //     &Transform,
     //     &mut LinearMovement,
@@ -392,7 +421,7 @@ fn check_arrived(
 //     }
 // }
 
-fn next_des(trigger: On<NextDes>, mut query: Query<&mut Movement>) {
+fn next_des(trigger: On<NextDes>, mut query: Query<&mut LinearMovement>) {
     if let Ok(mut movement) = query.get_mut(trigger.entity) {
         if !trigger.is_chain {
             movement.des.clear();

@@ -1,3 +1,5 @@
+#![doc=include_str!("../README.md")]
+
 #[cfg(feature = "kb_control")]
 pub mod kb_control;
 pub mod linear;

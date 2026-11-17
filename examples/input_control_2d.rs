@@ -17,7 +17,7 @@ use bevy_movement::{
     kb_control::KbMovementObject,
     linear::MovementType,
 };
-use bevy_movement::linear::Movement;
+use bevy_movement::linear::LinearMovement;
 use bevy_movement::mouse_control::MouseMovementObject;
 use bevy_movement::MovementPluginAnyState;
 
@@ -105,7 +105,7 @@ fn setup(mut commands: Commands) {
         Collider::rectangle(64., 64.),
         #[cfg(feature = "collider_2d")]
         GravityScale(0.),
-        Movement {
+        LinearMovement {
             movement_type: MovementType::Linear(100.),
             ..default()
         },

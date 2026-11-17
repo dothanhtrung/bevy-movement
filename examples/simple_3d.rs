@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 use bevy_movement::linear::{
-    Movement,
+    LinearMovement,
     MovementType,
 };
 use bevy_movement::{
@@ -26,7 +26,7 @@ fn setup(mut commands: Commands, mut meshes: ResMut<Assets<Mesh>>, mut materials
             Transform::from_translation(Vec3::new(0.0, 0.0, 0.0)),
             Mesh3d(meshes.add(Cuboid::default())),
             MeshMaterial3d(default_mat.clone()),
-            Movement {
+            LinearMovement {
                 movement_type: MovementType::Linear(2.),
                 ..default()
             },

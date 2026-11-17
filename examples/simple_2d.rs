@@ -1,7 +1,7 @@
 use bevy::color::palettes::basic::WHITE;
 use bevy::prelude::*;
 use bevy_movement::linear::{
-    Movement,
+    LinearMovement,
     MovementType,
     StepConfig,
 };
@@ -29,7 +29,7 @@ fn setup(mut commands: Commands) {
                 custom_size: Some(Vec2::new(64., 64.)),
                 ..default()
             },
-            Movement {
+            LinearMovement {
                 movement_type: MovementType::Linear(50.),
                 ..default()
             },
@@ -44,7 +44,7 @@ fn setup(mut commands: Commands) {
                 custom_size: Some(Vec2::new(64., 64.)),
                 ..default()
             },
-            Movement {
+            LinearMovement {
                 movement_type: MovementType::Stepper(StepConfig::new(50., 0.25)),
                 ..default()
             },
